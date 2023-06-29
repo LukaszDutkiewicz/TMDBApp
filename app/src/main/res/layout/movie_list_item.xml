@@ -78,7 +78,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/rating_bar"
                 android:layout_margin="10dp"
-                android:numStars="5"/>
+                android:numStars="5"
+                android:isIndicator="true"/>
 
         </LinearLayout>
 

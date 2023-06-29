@@ -34,7 +34,7 @@ public class MovieDetails extends AppCompatActivity {
             MovieModel movieModel = getIntent().getParcelableExtra("movie");
             titleDetails.setText(movieModel.getTitle());
             descDetails.setText(movieModel.getMovie_overview());
-            ratingBarDetails.setRating(movieModel.getVote_average());
+            ratingBarDetails.setRating(movieModel.getVote_average()/2);
 
             Glide.with(this)
                     .load("https://image.tmdb.org/t/p/w500/"
