@@ -26,9 +26,10 @@ public class MovieApiClient {
     private static MovieApiClient instance;
     private RetrieveMoviesRunnable retrieveMoviesRunnable;
 
-    //Live Data for popular
-    private MutableLiveData<List<MovieModel>> mPopular;
-    private RetrieveMoviesRunnablePopular retrieveMoviesRunnablePopular;
+    //Live Data for selected category
+    private MutableLiveData<List<MovieModel>> mCategory;
+    private RetrieveCategoryRunnable retrieveCategoryRunnable;
+
 
 
     public static MovieApiClient getInstance(){
@@ -40,15 +41,15 @@ public class MovieApiClient {
 
     private MovieApiClient(){
         mMovies = new MutableLiveData<>();
-        mPopular = new MutableLiveData<>();
+        mCategory = new MutableLiveData<>();
     }
 
     public LiveData<List<MovieModel>> getMovies(){
         return mMovies;
     }
 
-    public LiveData<List<MovieModel>> getPopular(){
-        return mPopular;
+    public LiveData<List<MovieModel>> getCategory(){
+        return mCategory;
     }
 
     public void searchMoviesApi(String query, int pageNumber) {
@@ -70,15 +71,15 @@ public class MovieApiClient {
 
     }
 
-    public void searchPopular(int pageNumber) {
+    public void searchCategory(int pageNumber, String category) {
 
-        if(retrieveMoviesRunnablePopular != null){
-            retrieveMoviesRunnablePopular = null;
+        if(retrieveCategoryRunnable != null){
+            retrieveCategoryRunnable = null;
         }
 
-        retrieveMoviesRunnablePopular = new RetrieveMoviesRunnablePopular(pageNumber);
+        retrieveCategoryRunnable = new RetrieveCategoryRunnable(pageNumber, category);
 
-        final Future mHandler2 = AppExecutors.getInstance().networkIO().submit(retrieveMoviesRunnablePopular);
+        final Future mHandler2 = AppExecutors.getInstance().networkIO().submit(retrieveCategoryRunnable);
 
         AppExecutors.getInstance().networkIO().schedule(new Runnable() {
             @Override
@@ -145,13 +146,15 @@ public class MovieApiClient {
         }
     }
 
-    private class RetrieveMoviesRunnablePopular implements Runnable{
+    private class RetrieveCategoryRunnable implements Runnable{
 
         private int pageNumber;
+        private String category;
         boolean cancelRequest;
 
-        public RetrieveMoviesRunnablePopular(int pageNumber) {
+        public RetrieveCategoryRunnable(int pageNumber, String category) {
             this.pageNumber = pageNumber;
+            this.category = category;
             cancelRequest = false;
         }
 
@@ -159,37 +162,39 @@ public class MovieApiClient {
         public void run() {
 
             try{
-                Response response2 = getPopular(pageNumber).execute();
+                Response response2 = getCategory(pageNumber, category).execute();
                 if(cancelRequest){
                     return;
                 }
                 if(response2.code() == 200 && response2.body() != null){
                     List<MovieModel> list = new ArrayList<>(((MovieSearchResponse)response2.body()).getMovies());
                     if(pageNumber == 1){
-                        mPopular.postValue(list);
+                        mCategory.postValue(list);
                     }else{
-                        List<MovieModel> currentMovies = mPopular.getValue();
+                        List<MovieModel> currentMovies = mCategory.getValue();
                         currentMovies.addAll(list);
-                        mPopular.postValue(currentMovies);
+                        mCategory.postValue(currentMovies);
                     }
                 }else{
                     String error = response2.errorBody().toString();
                     Log.v("Tag", "Error " + error);
-                    mMovies.postValue(null);
+                    mCategory.postValue(null);
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-                mPopular.postValue(null);
+                mCategory.postValue(null);
             }
 
 
         }
 
-        private Call<MovieSearchResponse> getPopular(int pageNumber){
-            return MovieService.getMovieApi().getPopular(
+        private Call<MovieSearchResponse> getCategory(int pageNumber, String category){
+            return MovieService.getMovieApi().getCategory(
+                    category,
                     Credentials.API_KEY,
                     pageNumber
+
             );
         }
         private void cancelRequest(){

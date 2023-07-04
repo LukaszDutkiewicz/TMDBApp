@@ -19,19 +19,19 @@ public class MovieListViewModel extends ViewModel {
     public LiveData<List<MovieModel>> getMovies(){
         return movieRepository.getMovies();
     }
-    public LiveData<List<MovieModel>> getPopular(){
-        return movieRepository.getPopular();
+    public LiveData<List<MovieModel>> getCategory(){
+        return movieRepository.getCategory();
     }
 
     public void searchMovieApi(String query, int pageNumber){
         movieRepository.searchMovieApi(query, pageNumber);
     }
-    public void searchPopular(int pageNumber){
-        movieRepository.searchPopular(pageNumber);
+    public void searchCategory(int pageNumber, String category){
+        movieRepository.searchCategory(pageNumber, category);
     }
 
-    public void searchNextPage(){
-        movieRepository.searchNextPage();
+    public void searchNextPage(boolean isCategory){
+        movieRepository.searchNextPage(isCategory);
     }
 
 }

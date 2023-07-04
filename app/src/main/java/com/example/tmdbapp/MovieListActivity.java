@@ -27,10 +27,9 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
 
     private RecyclerView recyclerView;
     private MovieRecyclerView movieRecyclerAdapter;
-
     private MovieListViewModel movieListViewModel;
 
-    boolean isPopular = true;
+    private boolean showCategory = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +40,19 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
         setSupportActionBar(toolbar);
 
         SetupSearchView();
+        SetupCategoryButtons();
 
         recyclerView = findViewById(R.id.recyclerView);
         movieListViewModel = new ViewModelProvider(this).get(MovieListViewModel.class);
 
         ConfigureRecyclerView();
         ObserveAnyChange();
-        ObservePopular();
+        ObserveCategory();
 
-        movieListViewModel.searchPopular(1);
+        movieListViewModel.searchCategory(1,"popular");
 
     }
+
 
     private void ObserveAnyChange(){
         movieListViewModel.getMovies().observe(this, new Observer<List<MovieModel>>() {
@@ -63,8 +64,8 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
             }
         });
     }
-    private void ObservePopular(){
-        movieListViewModel.getPopular().observe(this, new Observer<List<MovieModel>>() {
+    private void ObserveCategory(){
+        movieListViewModel.getCategory().observe(this, new Observer<List<MovieModel>>() {
             @Override
             public void onChanged(List<MovieModel> movieModels) {
                 if(movieModels != null){
@@ -84,7 +85,7 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if(!recyclerView.canScrollVertically(1)){
-                    movieListViewModel.searchNextPage();
+                        movieListViewModel.searchNextPage(showCategory);
                 }
             }
         });
@@ -97,8 +98,42 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
         startActivity(intent);
     }
 
-    @Override
-    public void onCategoryClick(String category) {
+    private void SetupCategoryButtons() {
+        final Button btn1 = findViewById(R.id.btnPopular);
+        final Button btn2 = findViewById(R.id.btnTopRated);
+        final Button btn3 = findViewById(R.id.btnUpcoming);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCategory = true;
+                movieListViewModel.searchCategory(
+                        1,
+                        "popular");
+                recyclerView.scrollToPosition(0);
+            }
+        });
+
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCategory = true;
+                movieListViewModel.searchCategory(
+                        1,
+                        "top_rated");
+                recyclerView.scrollToPosition(0);
+            }
+        });
+
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCategory = true;
+                movieListViewModel.searchCategory(
+                        1,
+                        "upcoming");
+                recyclerView.scrollToPosition(0);
+            }
+        });
 
     }
 
@@ -123,9 +158,10 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPopular = false;
+                showCategory = false;
             }
         });
+
     }
 
 //    private void GetRetrofitResponse() {

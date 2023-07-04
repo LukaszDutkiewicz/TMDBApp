@@ -14,6 +14,7 @@ public class MovieRepository {
     private MovieApiClient movieApiClient;
 
     private String mQuery;
+    private String mCategory;
     private int mPageNumber;
 
     public static MovieRepository getInstance(){
@@ -31,23 +32,29 @@ public class MovieRepository {
         return movieApiClient.getMovies();
     }
 
-    public LiveData<List<MovieModel>> getPopular(){
-        return movieApiClient.getPopular();
+    public LiveData<List<MovieModel>> getCategory(){
+        return movieApiClient.getCategory();
     }
 
 
     public void searchMovieApi(String query, int pageNumber){
         mQuery = query;
         mPageNumber = pageNumber;
-        movieApiClient.searchMoviesApi(query, pageNumber);
+        movieApiClient.searchMoviesApi(mQuery, mPageNumber);
     }
 
-    public void searchPopular(int pageNumber){
+    public void searchCategory(int pageNumber, String category){
         mPageNumber = pageNumber;
-        movieApiClient.searchPopular(pageNumber);
+        mCategory = category;
+        movieApiClient.searchCategory(pageNumber, category);
     }
 
-    public void searchNextPage(){
-        searchMovieApi(mQuery, mPageNumber+1);
+    public void searchNextPage(boolean isCategory){
+        if(isCategory){
+            searchCategory(mPageNumber+1, mCategory);
+        }else{
+            searchMovieApi(mQuery, mPageNumber + 1);
+        }
+
     }
 }

@@ -17,8 +17,9 @@ public interface MovieApi {
             @Query("page") int page
     );
 
-    @GET("/3/movie/popular")
-    Call<MovieSearchResponse> getPopular(
+    @GET("/3/movie/{category}?")
+    Call<MovieSearchResponse> getCategory(
+            @Path("category") String category,
             @Query("api_key") String key,
             @Query("page") int page
     );
