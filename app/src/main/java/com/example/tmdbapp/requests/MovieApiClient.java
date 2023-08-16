@@ -137,7 +137,8 @@ public class MovieApiClient {
             return MovieService.getMovieApi().searchMovie(
                     Credentials.API_KEY,
                     query,
-                    pageNumber
+                    pageNumber,
+                    Credentials.LANG
             );
         }
         private void cancelRequest(){
@@ -193,8 +194,8 @@ public class MovieApiClient {
             return MovieService.getMovieApi().getCategory(
                     category,
                     Credentials.API_KEY,
-                    pageNumber
-
+                    pageNumber,
+                    Credentials.LANG
             );
         }
         private void cancelRequest(){

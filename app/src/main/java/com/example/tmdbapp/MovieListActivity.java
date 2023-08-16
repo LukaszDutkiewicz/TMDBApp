@@ -11,13 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.tmdbapp.adapters.MovieRecyclerView;
 import com.example.tmdbapp.adapters.OnMovieListener;
+import com.example.tmdbapp.databinding.ActivityMovieListBinding;
 import com.example.tmdbapp.models.MovieModel;
 import com.example.tmdbapp.viewmodel.MovieListViewModel;
 
@@ -34,15 +33,21 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_movie_list);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        ActivityMovieListBinding binding = ActivityMovieListBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
-        SetupSearchView();
-        SetupCategoryButtons();
+        SetupSearchView(binding);
+        SetupCategoryButtons(binding);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        //recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = binding.recyclerView;
         movieListViewModel = new ViewModelProvider(this).get(MovieListViewModel.class);
 
         ConfigureRecyclerView();
@@ -98,11 +103,11 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
         startActivity(intent);
     }
 
-    private void SetupCategoryButtons() {
-        final Button btn1 = findViewById(R.id.btnPopular);
-        final Button btn2 = findViewById(R.id.btnTopRated);
-        final Button btn3 = findViewById(R.id.btnUpcoming);
-        btn1.setOnClickListener(new View.OnClickListener() {
+    private void SetupCategoryButtons(ActivityMovieListBinding binding) {
+//        final Button btn1 = findViewById(R.id.btnPopular);
+//        final Button btn2 = findViewById(R.id.btnTopRated);
+//        final Button btn3 = findViewById(R.id.btnUpcoming);
+        binding.btnPopular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCategory = true;
@@ -113,7 +118,7 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
             }
         });
 
-        btn2.setOnClickListener(new View.OnClickListener() {
+        binding.btnTopRated.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCategory = true;
@@ -124,7 +129,7 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
             }
         });
 
-        btn3.setOnClickListener(new View.OnClickListener() {
+        binding.btnUpcoming.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCategory = true;
@@ -137,9 +142,8 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
 
     }
 
-    private void SetupSearchView() {
-        final SearchView searchView = findViewById(R.id.search_view);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    private void SetupSearchView(ActivityMovieListBinding binding) {
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 movieListViewModel.searchMovieApi(
@@ -155,7 +159,7 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
             }
         });
 
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
+        binding.searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCategory = false;
@@ -164,67 +168,4 @@ public class MovieListActivity extends AppCompatActivity implements OnMovieListe
 
     }
 
-//    private void GetRetrofitResponse() {
-//        MovieApi movieApi = MovieService.getMovieApi();
-//
-//        Call<MovieSearchResponse> responseCall = movieApi
-//                .searchMovie(
-//                        Credentials.API_KEY,
-//                        "Action",
-//                        1);
-//
-//        responseCall.enqueue(new Callback<MovieSearchResponse>() {
-//            @Override
-//            public void onResponse(Call<MovieSearchResponse> call, Response<MovieSearchResponse> response) {
-//                if(response.code() == 200){
-//                    Log.v("Tag","the response" + response.body().toString());
-//
-//                    List<MovieModel> movies = new ArrayList<>(response.body().getMovies());
-//
-//                    for(MovieModel movie: movies){
-//                        Log.v("Tag", "The release date " + movie.getRelease_date());
-//                    }
-//                }else{
-//                    try{
-//                        Log.v("Tag", "Error" + response.errorBody().toString());
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MovieSearchResponse> call, Throwable t) {
-//                t.printStackTrace();
-//            }
-//        });
-//    }
-//
-//    private void GetRetrofitResponseAccordingToID(){
-//        MovieApi movieApi = MovieService.getMovieApi();
-//        Call<MovieModel> responseCall = movieApi
-//                .getMovie(550,
-//                        Credentials.API_KEY);
-//
-//        responseCall.enqueue(new Callback<MovieModel>() {
-//            @Override
-//            public void onResponse(Call<MovieModel> call, Response<MovieModel> response) {
-//                if(response.code() == 200){
-//                    MovieModel movie = response.body();
-//                    Log.v("Tag", "The response " + movie.getTitle());
-//                }else{
-//                    try{
-//                        Log.v("Tag", "Error "+response.errorBody().toString());
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MovieModel> call, Throwable t) {
-//
-//            }
-//        });
-//    }
 }
